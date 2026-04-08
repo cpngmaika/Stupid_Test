@@ -13,7 +13,7 @@ A Node.js/EJS web application that allows users to take various mental health as
 1. **Clone the repository and install dependencies:**
    ```bash
    npm install
-````
+   ```
 
 2. **Set up API Key:**
 
@@ -46,7 +46,3 @@ A Node.js/EJS web application that allows users to take various mental health as
 
 You can easily add new quizzes by creating a new object block inside `config/questions.js`.
 The routing system and UI will automatically adapt to the new test type.
-
-````
-
----
