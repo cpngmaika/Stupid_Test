@@ -48,3 +48,5 @@ You can easily add new quizzes by creating a new object block inside `config/que
 The routing system and UI will automatically adapt to the new test type.
 
 ````
+
+---
