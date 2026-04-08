@@ -48,15 +48,3 @@ You can easily add new quizzes by creating a new object block inside `config/que
 The routing system and UI will automatically adapt to the new test type.
 
 ````
-
----
-
-## 🔥 Gợi ý nhỏ (để repo nhìn “pro” hơn)
-Bạn có thể thêm 1 dòng trên cùng:
-
-```md
-> A not-so-stupid test that helps you understand your mental state.
-````
-
----
-
