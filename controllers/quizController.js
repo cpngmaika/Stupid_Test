@@ -1,99 +1,136 @@
-import dotenv from 'dotenv';
+import dotenv from "dotenv";
 dotenv.config({ override: true });
-import tests from '../data/questions.js';
-import { GoogleGenAI } from '@google/genai';
+import tests from "../config/questions.js";
+import { GoogleGenAI } from "@google/genai";
 
 const ai = new GoogleGenAI({
-    apiKey: process.env.GEMINI_API_KEY,
+  apiKey: process.env.GEMINI_API_KEY,
 });
 
 export const getHome = (req, res) => {
-    res.render('index', { tests });
+  res.render("index", { tests });
 };
 
 export const startTest = (req, res) => {
-    const testType = req.body.testType;
-    if (!tests[testType]) {
-        return res.redirect('/');
-    }
+  const testType = req.body.testType;
+  if (!tests[testType]) {
+    return res.redirect("/");
+  }
 
-    req.session.testType = testType;
-    req.session.currentQuestion = 1;
-    req.session.answers = [];
+  req.session.testType = testType;
+  req.session.currentQuestion = 1;
+  req.session.answers = [];
 
-    res.redirect('/question/1');
+  res.redirect("/question/1");
 };
 
 export const getQuestion = (req, res) => {
-    const id = parseInt(req.params.id);
-    const testType = req.session.testType;
+  const id = parseInt(req.params.id);
+  const testType = req.session.testType;
 
-    if (!testType || !tests[testType]) {
-        return res.redirect('/');
-    }
+  if (!testType || !tests[testType]) {
+    return res.redirect("/");
+  }
 
-    const currentTest = tests[testType];
-    const questions = currentTest.questions;
+  const currentTest = tests[testType];
+  const questions = currentTest.questions;
 
-    if (isNaN(id) || id < 1 || id > questions.length) {
-        return res.redirect('/');
-    }
+  if (isNaN(id) || id < 1 || id > questions.length) {
+    return res.redirect("/");
+  }
 
-    if (!req.session.currentQuestion) {
-        req.session.currentQuestion = 1;
-        req.session.answers = [];
-    }
+  if (!req.session.currentQuestion) {
+    req.session.currentQuestion = 1;
+    req.session.answers = [];
+  }
 
-    if (id > req.session.currentQuestion) {
-        return res.redirect(`/question/${req.session.currentQuestion}`);
-    }
+  if (id > req.session.currentQuestion) {
+    return res.redirect(`/question/${req.session.currentQuestion}`);
+  }
 
-    const question = questions.find(q => q.question === id);
-    res.render('question', { id, question, total: questions.length, testTitle: currentTest.title });
+  const question = questions.find((q) => q.question === id);
+  res.render("question", {
+    id,
+    question,
+    total: questions.length,
+    testTitle: currentTest.title,
+  });
 };
 
 export const postQuestion = async (req, res) => {
-    const id = parseInt(req.params.id);
-    const answer = req.body.answer;
-    const testType = req.session.testType;
+  const id = parseInt(req.params.id);
+  const answer = req.body.answer;
+  const testType = req.session.testType;
 
-    if (!testType || !tests[testType]) {
-        return res.redirect('/');
-    }
+  if (!testType || !tests[testType]) {
+    return res.redirect("/");
+  }
 
-    const currentTest = tests[testType];
-    const questions = currentTest.questions;
+  const currentTest = tests[testType];
+  const questions = currentTest.questions;
 
-    console.log(`Câu ${id}: Chọn đáp án ${answer}`);
+  console.log(`Câu ${id}: Chọn đáp án ${answer}`);
 
-    if (!req.session.answers) {
-        req.session.answers = [];
-    }
+  if (!req.session.answers) {
+    req.session.answers = [];
+  }
 
-    const questionObj = questions.find(q => q.question === id);
-    if (questionObj) {
-        const answerText = questionObj[answer] || answer;
-        req.session.answers.push(`Câu ${id} - ${questionObj.title}: ${answer} (${answerText})`);
-    }
+  const questionObj = questions.find((q) => q.question === id);
+  if (questionObj) {
+    const answerText = questionObj[answer] || answer;
+    req.session.answers.push(
+      `Câu ${id} - ${questionObj.title}: ${answer} (${answerText})`,
+    );
+  }
 
-    if (id === req.session.currentQuestion) {
-        req.session.currentQuestion += 1;
-    }
+  if (id === req.session.currentQuestion) {
+    req.session.currentQuestion += 1;
+  }
 
-    if (id < questions.length) {
-        res.redirect(`/question/${id + 1}`);
-    } else {
-        try {
-            const prompt = `Dưới đây là các câu trả lời trắc nghiệm của Client về ${currentTest.title}:\n\n${req.session.answers.join('\n')}\n\nHãy tổng hợp, nhận định, đánh giá mức độ của Client. Trả lời bằng tiếng Việt. Format kết quả bằng HTML, bao gồm các tiêu đề (h2, h3), đoạn văn (p) và danh sách (ul/li) (KHÔNG bọc kết quả trong thẻ \`\`\`html).`;
+  if (id < questions.length) {
+    res.redirect(`/question/${id + 1}`);
+  } else {
+    try {
+      const prompt = `
+Bạn là một trợ lý hỗ trợ sức khỏe tinh thần (KHÔNG phải bác sĩ).
 
-            console.log("Đang nộp cho Gemini...", prompt);
-            const response = await ai.models.generateContent({
-                model: "gemini-3-flash-preview",
-                contents: prompt,
-            });
+Dưới đây là các câu trả lời trắc nghiệm của người dùng về "${currentTest.title}":
 
+${req.session.answers.join("\n")}
 
-            res.send(`
+Yêu cầu:
+- Phân tích tổng thể câu trả lời để đưa ra NHẬN ĐỊNH mức độ cảm xúc/tâm trạng hiện tại.
+- KHÔNG khẳng định chẩn đoán bệnh (không dùng các câu như "bạn bị trầm cảm").
+- Sử dụng ngôn ngữ nhẹ nhàng, đồng cảm, không gây hoang mang.
+- Đưa ra gợi ý cải thiện thực tế, đơn giản, dễ áp dụng.
+- Nếu có dấu hiệu tiêu cực rõ ràng, khuyến khích tìm sự hỗ trợ từ chuyên gia (một cách tinh tế).
+
+Format HTML (KHÔNG dùng \`\`\`):
+- <h2>Đánh giá tổng quan</h2>
+- <p>...</p>
+
+- <h3>Điểm đáng chú ý</h3>
+- <ul>
+  <li>...</li>
+</ul>
+
+- <h3>Gợi ý cải thiện</h3>
+- <ul>
+  <li>...</li>
+</ul>
+
+- <h3>Lời nhắn</h3>
+- <p>...</p>
+
+Chỉ trả về HTML hợp lệ, không thêm giải thích ngoài.
+`;
+      console.log("Đang nộp cho Gemini...", prompt);
+      const response = await ai.models.generateContent({
+        model: "gemini-3-flash-preview",
+        contents: prompt,
+      });
+
+      res.send(`
               <!DOCTYPE html>
               <html lang="vi">
               <head>
@@ -121,7 +158,7 @@ export const postQuestion = async (req, res) => {
                               </div>
                               
                               <div class="prose prose-invert prose-p:text-slate-300 prose-headings:text-slate-100 prose-a:text-cyan-400 max-w-none">
-                                  ${response.text.replace(/\`\`\`html/g, '').replace(/\`\`\`/g, '')}
+                                  ${response.text.replace(/\`\`\`html/g, "").replace(/\`\`\`/g, "")}
                               </div>
                           </div>
                       </div>
@@ -136,9 +173,9 @@ export const postQuestion = async (req, res) => {
               </body>
               </html>
             `);
-        } catch (error) {
-            console.error(error);
-            res.send(`
+    } catch (error) {
+      console.error(error);
+      res.send(`
               <!DOCTYPE html>
               <html lang="vi">
               <head>
@@ -156,6 +193,6 @@ export const postQuestion = async (req, res) => {
               </body>
               </html>
             `);
-        }
     }
+  }
 };
