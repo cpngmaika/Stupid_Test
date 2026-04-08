@@ -1,41 +1,62 @@
-# Hệ Thống Trắc Nghiệm Tâm Lý (Tích hợp AI)
+# Mental Health Quiz System (AI-Powered)
 
-Một ứng dụng Node.js/EJS cho phép người dùng thực hiện đa dạng các bài đánh giá tâm lý (trầm cảm, lo âu, stress) và kết hợp sức mạnh của **Google Gemini AI** để tổng hợp, phân tích và đưa ra nhận xét một cách sinh động..
+A Node.js/EJS web application that allows users to take various mental health assessments (depression, anxiety, stress) while leveraging the power of **Google Gemini AI** to generate insightful and dynamic analysis of the results.
 
-## ✨ Tính năng nổi bật
-- Giao diện **TailwindCSS** hiện đại với các thành phần bóng bẩy (Glassmorphism).
-- Thanh Progress Bar giúp người dùng theo dõi tiến trình làm bài.
-- Hỗ trợ đa dạng chủ đề trắc nghiệm qua file cấu hình động.
-- Liên kết trực tiếp API của **Gemini 3 Flash Preview** để nhận xét kết quả người dùng.
+## ✨ Key Features
+- Modern **Tailwind CSS** interface with glassmorphism-style UI.
+- Progress bar to track quiz completion.
+- Flexible quiz system powered by dynamic configuration files.
+- Direct integration with **Gemini 3 Flash Preview API** for AI-generated feedback.
 
-## 🚀 Hướng dẫn cài đặt
+## 🚀 Installation Guide
 
-1. **Clone repository và cài đặt Dependencies:**
+1. **Clone the repository and install dependencies:**
    ```bash
    npm install
-   ```
+````
 
-2. **Cấu hình API Key:**
-   - Tạo file `.env` ở thư mục gốc (hoặc sao chép từ file `.env.example`).
-   - Cập nhật thông tin Google Gemini API Key:
+2. **Set up API Key:**
+
+   * Create a `.env` file in the root directory (or copy from `.env.example`).
+   * Add your Google Gemini API key:
+
    ```env
-   GEMINI_API_KEY=khóa_api_của_bạn_tại_đây
+   GEMINI_API_KEY=your_api_key_here
    ```
 
-3. **Chạy ứng dụng:**
+3. **Run the application:**
+
    ```bash
    node server.js
    ```
-   *Lưu ý: Bạn cũng có thể dùng `npm start` nếu đã thiết lập kèm các cờ environment file tuỳ chọn.*
 
-4. Mở trình duyệt và truy cập: **[http://localhost:3000](http://localhost:3000)**
+   *Note: You can also use `npm start` if configured with environment file flags.*
 
-## 🛠️ Công nghệ sử dụng
-- **Node.js & Express**: Framework Web server.
-- **EJS**: View engine để render giao diện HTML động.
-- **Tailwind CSS**: Styling UI (qua phương thức CDN).
-- **@google/genai**: Thư viện SDK chính thức từ Google tương tác trực tiếp với bộ não Gemini.
-- **dotenv**: Bắt buộc nạp API key an toàn bảo mật.
+4. Open your browser and go to: **[http://localhost:3000](http://localhost:3000)**
 
-## 📝 Giới hạn / Tuỳ biến
-Bạn có thể dễ dàng thêm bài trắc nghiệm mới chỉ bằng việc thêm 1 Block Object vào bên trong cấu hình `config/questions.js`. Hệ thống routing và giao diện sẽ tự động thích ứng với loại bài test mới.
+## 🛠️ Tech Stack
+
+* **Node.js & Express** – Backend server framework
+* **EJS** – Template engine for dynamic HTML rendering
+* **Tailwind CSS** – UI styling (via CDN)
+* **@google/genai** – Official Google SDK for interacting with Gemini
+* **dotenv** – Secure environment variable management
+
+## 📝 Customization
+
+You can easily add new quizzes by creating a new object block inside `config/questions.js`.
+The routing system and UI will automatically adapt to the new test type.
+
+````
+
+---
+
+## 🔥 Gợi ý nhỏ (để repo nhìn “pro” hơn)
+Bạn có thể thêm 1 dòng trên cùng:
+
+```md
+> A not-so-stupid test that helps you understand your mental state.
+````
+
+---
+
