@@ -1,6 +1,6 @@
 import dotenv from 'dotenv';
 dotenv.config({ override: true });
-import tests from '../config/questions.js';
+import tests from '../data/questions.js';
 import { GoogleGenAI } from '@google/genai';
 
 const ai = new GoogleGenAI({
